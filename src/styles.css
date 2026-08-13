@@ -62,40 +62,41 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
+  --radius: 0.55rem;
+  --background: oklch(0.19 0.03 255);
+  --foreground: oklch(0.96 0.006 250);
+  --card: oklch(0.235 0.031 256);
+  --card-foreground: oklch(0.96 0.006 250);
+  --popover: oklch(0.235 0.031 256);
+  --popover-foreground: oklch(0.96 0.006 250);
+  --primary: oklch(0.78 0.15 78);
+  --primary-foreground: oklch(0.21 0.04 258);
+  --secondary: oklch(0.29 0.033 257);
+  --secondary-foreground: oklch(0.95 0.006 250);
+  --muted: oklch(0.28 0.03 257);
+  --muted-foreground: oklch(0.72 0.02 255);
+  --accent: oklch(0.8 0.145 80);
+  --accent-foreground: oklch(0.21 0.04 258);
+  --destructive: oklch(0.68 0.19 24);
+  --destructive-foreground: oklch(0.98 0.005 250);
+  --border: oklch(0.33 0.028 257);
+  --input: oklch(0.3 0.03 257);
+  --ring: oklch(0.8 0.145 80);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  --sidebar: oklch(0.235 0.031 256);
+  --sidebar-foreground: oklch(0.96 0.006 250);
+  --sidebar-primary: oklch(0.8 0.145 80);
+  --sidebar-primary-foreground: oklch(0.21 0.04 258);
+  --sidebar-accent: oklch(0.29 0.033 257);
+  --sidebar-accent-foreground: oklch(0.95 0.006 250);
+  --sidebar-border: oklch(0.33 0.028 257);
+  --sidebar-ring: oklch(0.8 0.145 80);
 }
+
 
 .dark {
   --background: oklch(0.129 0.042 264.695);
@@ -140,5 +141,127 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+  }
+}
+
+@theme {
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+  }
+}
+
+@utility font-display {
+  font-family: var(--font-display);
+}
+
+@utility panel {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  background: linear-gradient(
+    160deg,
+    color-mix(in oklab, var(--color-card) 96%, white 4%),
+    var(--color-card)
+  );
+  padding: 0.85rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  overflow: auto;
+}
+
+@utility panel-title {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+
+@utility field-label {
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@utility field-input {
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-input);
+  background: color-mix(in oklab, var(--color-background) 70%, black 6%);
+  padding: 0.4rem 0.55rem;
+  font-size: 0.82rem;
+  color: var(--color-foreground);
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:focus {
+    border-color: var(--color-ring);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-ring) 25%, transparent);
+  }
+
+  &::-webkit-calendar-picker-indicator {
+    filter: invert(0.8);
+    cursor: pointer;
+  }
+}
+
+@utility chip {
+  border-radius: 999px;
+  border: 1px solid var(--color-input);
+  background: color-mix(in oklab, var(--color-background) 70%, black 6%);
+  padding: 0.3rem 0.62rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--color-muted-foreground);
+  transition: all 0.15s ease;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--color-ring);
+    color: var(--color-foreground);
+  }
+}
+
+@utility chip-active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-accent-foreground);
+  font-weight: 600;
+}
+
+@utility btn-submit {
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: var(--color-accent-foreground);
+  padding: 0.5rem 1.4rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow: 0 8px 24px -12px color-mix(in oklab, var(--color-accent) 80%, transparent);
+  transition: transform 0.15s ease, filter 0.15s ease;
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
   }
 }
