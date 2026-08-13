@@ -143,3 +143,125 @@
     color: var(--color-foreground);
   }
 }
+
+@theme {
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+  }
+}
+
+@utility font-display {
+  font-family: var(--font-display);
+}
+
+@utility panel {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  background: linear-gradient(
+    160deg,
+    color-mix(in oklab, var(--color-card) 96%, white 4%),
+    var(--color-card)
+  );
+  padding: 0.85rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  overflow: auto;
+}
+
+@utility panel-title {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+
+@utility field-label {
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@utility field-input {
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-input);
+  background: color-mix(in oklab, var(--color-background) 70%, black 6%);
+  padding: 0.4rem 0.55rem;
+  font-size: 0.82rem;
+  color: var(--color-foreground);
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:focus {
+    border-color: var(--color-ring);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-ring) 25%, transparent);
+  }
+
+  &::-webkit-calendar-picker-indicator {
+    filter: invert(0.8);
+    cursor: pointer;
+  }
+}
+
+@utility chip {
+  border-radius: 999px;
+  border: 1px solid var(--color-input);
+  background: color-mix(in oklab, var(--color-background) 70%, black 6%);
+  padding: 0.3rem 0.62rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--color-muted-foreground);
+  transition: all 0.15s ease;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--color-ring);
+    color: var(--color-foreground);
+  }
+}
+
+@utility chip-active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-accent-foreground);
+  font-weight: 600;
+}
+
+@utility btn-submit {
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: var(--color-accent-foreground);
+  padding: 0.5rem 1.4rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow: 0 8px 24px -12px color-mix(in oklab, var(--color-accent) 80%, transparent);
+  transition: transform 0.15s ease, filter 0.15s ease;
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
