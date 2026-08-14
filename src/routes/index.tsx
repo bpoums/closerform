@@ -199,6 +199,34 @@ function CloserForm() {
   );
 }
 
+const ZODIAC: { name: string; symbol: string; until: [number, number] }[] = [
+  { name: "Capricorn", symbol: "♑", until: [1, 19] },
+  { name: "Aquarius", symbol: "♒", until: [2, 18] },
+  { name: "Pisces", symbol: "♓", until: [3, 20] },
+  { name: "Aries", symbol: "♈", until: [4, 19] },
+  { name: "Taurus", symbol: "♉", until: [5, 20] },
+  { name: "Gemini", symbol: "♊", until: [6, 20] },
+  { name: "Cancer", symbol: "♋", until: [7, 22] },
+  { name: "Leo", symbol: "♌", until: [8, 22] },
+  { name: "Virgo", symbol: "♍", until: [9, 22] },
+  { name: "Libra", symbol: "♎", until: [10, 22] },
+  { name: "Scorpio", symbol: "♏", until: [11, 21] },
+  { name: "Sagittarius", symbol: "♐", until: [12, 21] },
+  { name: "Capricorn", symbol: "♑", until: [12, 31] },
+];
+
+function zodiacSign(value: string) {
+  const d = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return null;
+  const m = d.getMonth() + 1;
+  const day = d.getDate();
+  return (
+    ZODIAC.find(({ until }) => m < until[0] || (m === until[0] && day <= until[1])) ?? null
+  );
+}
+
+
+
 function FieldControl({
   field,
   value,
@@ -210,12 +238,29 @@ function FieldControl({
 }) {
   const id = field.label.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase();
 
+  const hint = (() => {
+    if (!value) return null;
+    if (field.label === "Customer D.O.B") {
+      const sign = zodiacSign(value);
+      return sign ? { tone: "info" as const, text: `${sign.symbol} ${sign.name}` } : null;
+    }
+    if (field.label === "Draft Date") {
+      const d = new Date(`${value}T00:00:00`);
+      if (Number.isNaN(d.getTime())) return null;
+      if (d.getDay() === 6) return { tone: "warn" as const, text: "⚠ It's Saturday" };
+      if (d.getDay() === 0) return { tone: "danger" as const, text: "⛔ It's Sunday" };
+      return null;
+    }
+    return null;
+  })();
+
   return (
     <div className={`flex flex-col gap-1 ${field.span ?? ""}`}>
       <label htmlFor={id} className="field-label">
         {field.label}
         {field.required ? <span className="text-accent"> *</span> : null}
       </label>
+
 
       {field.type === "textarea" ? (
         <textarea
@@ -250,6 +295,21 @@ function FieldControl({
           className="field-input"
         />
       )}
+
+      {hint ? (
+        <span
+          className={`text-[0.68rem] font-semibold ${
+            hint.tone === "danger"
+              ? "text-destructive"
+              : hint.tone === "warn"
+                ? "text-primary"
+                : "text-accent"
+          }`}
+        >
+          {hint.text}
+        </span>
+      ) : null}
     </div>
+
   );
 }
