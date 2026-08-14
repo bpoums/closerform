@@ -155,6 +155,13 @@
   }
 }
 
+@layer utilities {
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @utility font-display {
   font-family: var(--font-display);
 }
@@ -172,6 +179,14 @@
   flex-direction: column;
   gap: 0.6rem;
   overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
 }
 
 @utility panel-title {
