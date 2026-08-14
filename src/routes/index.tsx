@@ -347,8 +347,9 @@ function FieldControl({
         />
       )}
 
-      {hint ? (
+      {hints.map((hint) => (
         <span
+          key={hint.text}
           className={`text-[0.68rem] font-semibold ${
             hint.tone === "danger"
               ? "text-destructive"
@@ -359,7 +360,7 @@ function FieldControl({
         >
           {hint.text}
         </span>
-      ) : null}
+      ))}
     </div>
 
   );
