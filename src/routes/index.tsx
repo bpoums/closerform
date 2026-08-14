@@ -295,6 +295,21 @@ function FieldControl({
           className="field-input"
         />
       )}
+
+      {hint ? (
+        <span
+          className={`text-[0.68rem] font-semibold ${
+            hint.tone === "danger"
+              ? "text-destructive"
+              : hint.tone === "warn"
+                ? "text-primary"
+                : "text-accent"
+          }`}
+        >
+          {hint.text}
+        </span>
+      ) : null}
     </div>
+
   );
 }
