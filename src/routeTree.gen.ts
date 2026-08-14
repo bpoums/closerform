@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedCloserRouteImport } from './routes/_authenticated/closer'
+import { Route as AuthenticatedManagerRouteImport } from './routes/_authenticated/manager'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -33,16 +34,23 @@ const AuthenticatedCloserRoute = AuthenticatedCloserRouteImport.update({
   path: '/closer',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedManagerRoute = AuthenticatedManagerRouteImport.update({
+  id: '/manager',
+  path: '/manager',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/closer': typeof AuthenticatedCloserRoute
+  '/manager': typeof AuthenticatedManagerRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/closer': typeof AuthenticatedCloserRoute
+  '/manager': typeof AuthenticatedManagerRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -50,13 +58,20 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/_authenticated/closer': typeof AuthenticatedCloserRoute
+  '/_authenticated/manager': typeof AuthenticatedManagerRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/closer'
+  fullPaths: '/' | '/login' | '/closer' | '/manager'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/closer'
-  id: '__root__' | '/' | '/_authenticated' | '/login' | '/_authenticated/closer'
+  to: '/' | '/login' | '/closer' | '/manager'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/login'
+    | '/_authenticated/closer'
+    | '/_authenticated/manager'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -95,15 +110,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCloserRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/manager': {
+      id: '/_authenticated/manager'
+      path: '/manager'
+      fullPath: '/manager'
+      preLoaderRoute: typeof AuthenticatedManagerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCloserRoute: typeof AuthenticatedCloserRoute
+  AuthenticatedManagerRoute: typeof AuthenticatedManagerRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCloserRoute: AuthenticatedCloserRoute,
+  AuthenticatedManagerRoute: AuthenticatedManagerRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

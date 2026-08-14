@@ -64,7 +64,7 @@ type ManagerRow = SubmissionRow & {
   timeout_by: { full_name: string | null } | null;
 };
 
-const OPEN_STATUSES = ["pending_manager", "returned_timeout", "assigned", "in_review"];
+const OPEN_STATUSES = ["pending_manager", "returned_timeout", "assigned", "in_review"] as const;
 
 function ManagerPage() {
   const queryClient = useQueryClient();
