@@ -114,7 +114,18 @@ function CloserForm() {
   const [message, setMessage] = useState("");
 
   const set = (label: string, value: string) =>
-    setValues((prev) => ({ ...prev, [label]: value }));
+    setValues((prev) => {
+      if (label === "S.S.N") return { ...prev, [label]: formatSSN(value) };
+      if (label === "Customer D.O.B") {
+        const age = calcAge(value);
+        return {
+          ...prev,
+          [label]: value,
+          "Customer Age": age === null ? "" : String(age),
+        };
+      }
+      return { ...prev, [label]: value };
+    });
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
