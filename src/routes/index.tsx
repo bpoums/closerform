@@ -226,6 +226,33 @@ const ZODIAC: { name: string; symbol: string; until: [number, number] }[] = [
   { name: "Capricorn", symbol: "♑", until: [12, 31] },
 ];
 
+function formatSSN(value: string) {
+  const d = value.replace(/\D/g, "").slice(0, 9);
+  if (d.length <= 3) return d;
+  if (d.length <= 5) return `${d.slice(0, 3)}-${d.slice(3)}`;
+  return `${d.slice(0, 3)}-${d.slice(3, 5)}-${d.slice(5)}`;
+}
+
+function calcAge(value: string) {
+  const d = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return null;
+  const now = new Date();
+  let age = now.getFullYear() - d.getFullYear();
+  const m = now.getMonth() - d.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age -= 1;
+  return age >= 0 && age < 130 ? age : null;
+}
+
+function daysToBirthday(value: string) {
+  const d = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return null;
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  let next = new Date(today.getFullYear(), d.getMonth(), d.getDate());
+  if (next < today) next = new Date(today.getFullYear() + 1, d.getMonth(), d.getDate());
+  return Math.round((next.getTime() - today.getTime()) / 86400000);
+}
+
 function zodiacSign(value: string) {
   const d = new Date(`${value}T00:00:00`);
   if (Number.isNaN(d.getTime())) return null;
