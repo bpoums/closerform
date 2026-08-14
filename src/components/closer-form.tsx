@@ -166,8 +166,16 @@ export function CloserForm() {
             <button type="submit" className="btn-submit" disabled={status === "sending"}>
               {status === "sending" ? "Submitting…" : "Submit entry"}
             </button>
+            <button
+              type="button"
+              onClick={signOut}
+              className="chip"
+            >
+              Sign out
+            </button>
           </div>
         </header>
+
 
         <div className="grid flex-1 gap-3 lg:min-h-0 lg:grid-cols-12 lg:gap-4">
           {SECTIONS.map((section, index) => (
