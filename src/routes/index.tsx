@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -263,7 +263,58 @@ function zodiacSign(value: string) {
   );
 }
 
+type ZipInfo = { place: string; state: string; temp: number; time: string };
 
+function useZipInfo(zip: string, enabled: boolean) {
+  const [info, setInfo] = useState<ZipInfo | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!enabled || !/^\d{5}$/.test(zip)) {
+      setInfo(null);
+      return;
+    }
+    let cancelled = false;
+    setLoading(true);
+    (async () => {
+      try {
+        const geoRes = await fetch(`https://api.zippopotam.us/us/${zip}`);
+        if (!geoRes.ok) throw new Error("zip");
+        const geo = await geoRes.json();
+        const p = geo.places?.[0];
+        if (!p) throw new Error("place");
+        const lat = p.latitude;
+        const lon = p.longitude;
+        const wRes = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m&timezone=auto`,
+        );
+        if (!wRes.ok) throw new Error("weather");
+        const w = await wRes.json();
+        const local = new Date(w.current.time);
+        const time = local.toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+        });
+        if (!cancelled)
+          setInfo({
+            place: p["place name"],
+            state: p["state"],
+            temp: Math.round(w.current.temperature_2m),
+            time,
+          });
+      } catch {
+        if (!cancelled) setInfo(null);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [zip, enabled]);
+
+  return { info, loading };
+}
 
 function FieldControl({
   field,
@@ -275,11 +326,23 @@ function FieldControl({
   onChange: (value: string) => void;
 }) {
   const id = field.label.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase();
+  const isZip = field.label === "Customer Zip Code";
+  const { info: zipInfo, loading: zipLoading } = useZipInfo(value, isZip);
 
   type Hint = { tone: "info" | "warn" | "danger"; text: string };
   const hints = (() => {
     const out: Hint[] = [];
+    if (isZip) {
+      if (zipLoading) out.push({ tone: "info", text: "Looking up location…" });
+      else if (zipInfo)
+        out.push({
+          tone: "info",
+          text: `${zipInfo.temp}°C in ${zipInfo.place}, ${zipInfo.state} — ${zipInfo.time} local time`,
+        });
+      return out;
+    }
     if (!value) return out;
+
     if (field.label === "Customer D.O.B") {
       const sign = zodiacSign(value);
       if (sign) out.push({ tone: "info", text: `${sign.symbol} ${sign.name}` });
