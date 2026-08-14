@@ -88,7 +88,8 @@ function emptyForm(): Record<string, string> {
   return Object.fromEntries(ALL_FIELDS.map((f) => [f.label, ""]));
 }
 
-function CloserForm() {
+export function CloserForm() {
+  const { signOut } = useAuth();
   const [values, setValues] = useState<Record<string, string>>(emptyForm);
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [message, setMessage] = useState("");
@@ -118,6 +119,8 @@ function CloserForm() {
         body: JSON.stringify(values),
       });
       if (!response.ok) throw new Error(`Request failed (${response.status})`);
+      const { error } = await supabase.rpc("submit_form", { p_payload: values });
+      if (error) throw new Error(error.message);
       setStatus("sent");
       setMessage("Submission saved to the sheet.");
       setValues(emptyForm());
@@ -127,6 +130,7 @@ function CloserForm() {
       setMessage(error instanceof Error ? error.message : "Could not submit.");
     }
   }
+
 
   return (
     <main className="min-h-screen bg-background text-foreground lg:h-screen lg:overflow-hidden">
