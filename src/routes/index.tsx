@@ -210,12 +210,29 @@ function FieldControl({
 }) {
   const id = field.label.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase();
 
+  const hint = (() => {
+    if (!value) return null;
+    if (field.label === "Customer D.O.B") {
+      const sign = zodiacSign(value);
+      return sign ? { tone: "info" as const, text: `${sign.symbol} ${sign.name}` } : null;
+    }
+    if (field.label === "Draft Date") {
+      const d = new Date(`${value}T00:00:00`);
+      if (Number.isNaN(d.getTime())) return null;
+      if (d.getDay() === 6) return { tone: "warn" as const, text: "⚠ It's Saturday" };
+      if (d.getDay() === 0) return { tone: "danger" as const, text: "⛔ It's Sunday" };
+      return null;
+    }
+    return null;
+  })();
+
   return (
     <div className={`flex flex-col gap-1 ${field.span ?? ""}`}>
       <label htmlFor={id} className="field-label">
         {field.label}
         {field.required ? <span className="text-accent"> *</span> : null}
       </label>
+
 
       {field.type === "textarea" ? (
         <textarea
