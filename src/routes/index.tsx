@@ -114,7 +114,18 @@ function CloserForm() {
   const [message, setMessage] = useState("");
 
   const set = (label: string, value: string) =>
-    setValues((prev) => ({ ...prev, [label]: value }));
+    setValues((prev) => {
+      if (label === "S.S.N") return { ...prev, [label]: formatSSN(value) };
+      if (label === "Customer D.O.B") {
+        const age = calcAge(value);
+        return {
+          ...prev,
+          [label]: value,
+          "Customer Age": age === null ? "" : String(age),
+        };
+      }
+      return { ...prev, [label]: value };
+    });
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -215,6 +226,33 @@ const ZODIAC: { name: string; symbol: string; until: [number, number] }[] = [
   { name: "Capricorn", symbol: "♑", until: [12, 31] },
 ];
 
+function formatSSN(value: string) {
+  const d = value.replace(/\D/g, "").slice(0, 9);
+  if (d.length <= 3) return d;
+  if (d.length <= 5) return `${d.slice(0, 3)}-${d.slice(3)}`;
+  return `${d.slice(0, 3)}-${d.slice(3, 5)}-${d.slice(5)}`;
+}
+
+function calcAge(value: string) {
+  const d = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return null;
+  const now = new Date();
+  let age = now.getFullYear() - d.getFullYear();
+  const m = now.getMonth() - d.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age -= 1;
+  return age >= 0 && age < 130 ? age : null;
+}
+
+function daysToBirthday(value: string) {
+  const d = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return null;
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  let next = new Date(today.getFullYear(), d.getMonth(), d.getDate());
+  if (next < today) next = new Date(today.getFullYear() + 1, d.getMonth(), d.getDate());
+  return Math.round((next.getTime() - today.getTime()) / 86400000);
+}
+
 function zodiacSign(value: string) {
   const d = new Date(`${value}T00:00:00`);
   if (Number.isNaN(d.getTime())) return null;
@@ -238,20 +276,33 @@ function FieldControl({
 }) {
   const id = field.label.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase();
 
-  const hint = (() => {
-    if (!value) return null;
+  type Hint = { tone: "info" | "warn" | "danger"; text: string };
+  const hints = (() => {
+    const out: Hint[] = [];
+    if (!value) return out;
     if (field.label === "Customer D.O.B") {
       const sign = zodiacSign(value);
-      return sign ? { tone: "info" as const, text: `${sign.symbol} ${sign.name}` } : null;
+      if (sign) out.push({ tone: "info", text: `${sign.symbol} ${sign.name}` });
+      const days = daysToBirthday(value);
+      if (days !== null && days <= 30) {
+        out.push({
+          tone: "warn",
+          text:
+            days === 0
+              ? "🎂 Birthday is today"
+              : days === 1
+                ? "🎂 Birthday tomorrow"
+                : `🎂 Birthday in ${days} days`,
+        });
+      }
     }
     if (field.label === "Draft Date") {
       const d = new Date(`${value}T00:00:00`);
-      if (Number.isNaN(d.getTime())) return null;
-      if (d.getDay() === 6) return { tone: "warn" as const, text: "⚠ It's Saturday" };
-      if (d.getDay() === 0) return { tone: "danger" as const, text: "⛔ It's Sunday" };
-      return null;
+      if (Number.isNaN(d.getTime())) return out;
+      if (d.getDay() === 6) out.push({ tone: "warn", text: "⚠ It's Saturday" });
+      if (d.getDay() === 0) out.push({ tone: "danger", text: "⛔ It's Sunday" });
     }
-    return null;
+    return out;
   })();
 
   return (
@@ -296,8 +347,9 @@ function FieldControl({
         />
       )}
 
-      {hint ? (
+      {hints.map((hint) => (
         <span
+          key={hint.text}
           className={`text-[0.68rem] font-semibold ${
             hint.tone === "danger"
               ? "text-destructive"
@@ -308,7 +360,7 @@ function FieldControl({
         >
           {hint.text}
         </span>
-      ) : null}
+      ))}
     </div>
 
   );
